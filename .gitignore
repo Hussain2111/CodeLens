@@ -1,0 +1,11 @@
+
+```gitignore
+node_modules/
+dist/
+.vite/
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store

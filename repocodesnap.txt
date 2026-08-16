@@ -1,0 +1,1596 @@
+REPOSITORY: codesnap
+Flattened source. node_modules, .git, build output, lock files and binary assets excluded.
+
+FILE TREE
+.gitignore
+README.md
+eslint.config.js
+extension/README.md
+extension/package.json
+extension/src/extension.ts
+extension/tsconfig.json
+index.html
+package.json
+public/manifest.json
+server/savePicture.js
+src/App.css
+src/App.tsx
+src/Camera.tsx
+src/index.css
+src/main.tsx
+tsconfig.app.json
+tsconfig.json
+tsconfig.node.json
+vercel.json
+vite.config.ts
+
+================================================================
+
+===== FILE: .gitignore =====
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+===== FILE: README.md =====
+
+# CodeSnap
+
+**Instantly extract code from lecture screens — snap, extract, paste.**
+
+CodeSnap is a powerful tool that allows you to capture code from physical screens (like lecture slides, whiteboards, or monitors) using your mobile device camera and extract the text using AI. The extracted code can then be transferred directly to VS Code via a companion extension.
+
+## 🌟 Features
+
+- **Mobile Web App**: Capture code snippets using your phone's camera
+- **AI-Powered Extraction**: Uses Gemini AI to accurately extract code from images
+- **VS Code Integration**: Seamlessly transfer extracted code to VS Code via WebSocket connection
+- **QR Code Pairing**: Easy device pairing with VS Code using QR codes
+- **Multi-Language Support**: Detects and preserves code language syntax
+- **PWA Ready**: Install as a Progressive Web App on mobile devices
+
+## 📁 Project Structure
+
+```
+codesnap/
+├── src/                      # React frontend source
+│   ├── App.tsx              # Main app component with landing page
+│   ├── Camera.tsx           # Camera capture and code extraction
+│   ├── App.css              # Styles
+│   └── main.tsx             # Entry point
+├── extension/               # VS Code extension
+│   ├── src/
+│   │   └── extension.ts     # Extension logic
+│   └── package.json         # Extension manifest
+├── server/                  # Optional local server
+│   └── savePicture.js       # Image saving endpoint
+└── public/
+    ├── manifest.json        # PWA manifest
+    └── CodeSnapLogo.PNG     # App logo
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 14.x or higher
+- VS Code 1.85.0 or higher (for extension)
+- Modern web browser with camera access
+- Backend API deployed (for code extraction)
+
+### Frontend Setup
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Configure API endpoint:**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_API_BASE=https://your-backend-api.com
+   ```
+
+3. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+### VS Code Extension Setup
+
+1. **Navigate to extension directory:**
+   ```bash
+   cd extension
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Compile TypeScript:**
+   ```bash
+   npm run compile
+   ```
+
+4. **Development mode:**
+   Press `F5` in VS Code to open a new window with the extension loaded
+
+5. **Watch mode:**
+   ```bash
+   npm run watch
+   ```
+
+## 🎯 How It Works
+
+### Mobile App Flow
+
+1. **Landing Page**: User is greeted with an animated code typing effect
+2. **Camera Access**: Click "Get Started" to open camera interface
+3. **Capture**: Take a photo of code on screen using the capture button
+4. **Extract**: Click "Analyze" to send image to AI for code extraction
+5. **Results**: View extracted code with language detection
+6. **Copy/Save**: Copy to clipboard or save image locally
+
+### VS Code Extension Flow
+
+1. **Start Server**: Extension automatically starts WebSocket server on port 3001
+2. **Pair Device**: Use "CodeSnap: Pair Device" command to generate QR code
+3. **Scan QR**: Scan QR code with mobile app to establish connection
+4. **Receive Code**: Code sent from mobile app opens automatically in new editor tab
+
+## 🔧 Configuration
+
+### Extension Settings
+
+Access via VS Code Settings (`Ctrl+,` or `Cmd+,`):
+
+- `codesnap.port`: WebSocket server port (default: 3001)
+
+### Backend API
+
+The mobile app expects a backend endpoint at `/extract` that:
+- Accepts POST requests with JSON body: `{ "imageData": "base64-encoded-image" }`
+- Returns JSON response: `{ "code": "extracted code", "language": "detected language" }`
+
+## 🎨 Tech Stack
+
+**Frontend:**
+- React 19.2
+- TypeScript 5.9
+- Vite 7.2
+- CSS3 with Google-inspired design
+
+**VS Code Extension:**
+- TypeScript 5.1
+- WebSocket (ws 8.14)
+- QRCode generation (qrcode 1.5)
+- VS Code Extension API
+
+**Backend (not included):**
+- Expected to use Gemini AI or similar for OCR/code extraction
+
+## 📱 PWA Features
+
+- Installable on mobile devices
+- Offline-capable (with service worker)
+- Native-like camera access
+- Icon and splash screen configured
+
+## 🔐 Security Considerations
+
+- Camera access requires HTTPS in production
+- WebSocket connections should be on same local network
+- Backend API should implement rate limiting
+- Image data is base64-encoded for transmission
+
+## 🤝 Contributing
+
+Contributions are welcome! Areas for improvement:
+
+- Additional language support
+- Improved code extraction accuracy
+- Syntax highlighting in preview
+- Direct cloud sync options
+- Mobile app for iOS/Android
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+## 🙏 Acknowledgments
+
+- Gemini AI for code extraction capabilities
+- Google's Material Design for UI inspiration
+- VS Code Extension API documentation
+
+## 📞 Support
+
+For issues or questions:
+- Check existing GitHub issues
+- Create new issue with detailed description
+- Include screenshots and error messages
+
+---
+
+**Made with ❤️ for developers who learn from lectures**
+
+
+===== FILE: eslint.config.js =====
+
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
+  },
+])
+
+
+===== FILE: extension/README.md =====
+
+# CodeSnap VS Code Extension
+
+A VS Code extension that allows you to pair your mobile device with VS Code to transfer code snippets using the CodeSnap mobile app.
+
+## Features
+
+- Start a local WebSocket server to receive code snippets
+- Generate a QR code for easy pairing with the mobile app
+- Automatically open received code in a new editor tab with syntax highlighting
+- Simple and intuitive user interface
+
+## Installation
+
+1. Install the extension from the VS Code Marketplace (coming soon)
+2. Or, to install from source:
+   ```bash
+   cd extension
+   npm install
+   npm run compile
+   ```
+   Then press F5 to open a new VS Code window with the extension loaded.
+
+## Usage
+
+1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on macOS)
+2. Run the `CodeSnap: Start Server` command to start the WebSocket server
+3. Run the `CodeSnap: Pair Device` command to generate a QR code
+4. Open the CodeSnap app on your mobile device and scan the QR code
+5. Take a photo of your code using the app and send it to VS Code
+
+## Configuration
+
+You can configure the following settings in your VS Code settings (File > Preferences > Settings):
+
+- `codesnap.port`: The port number for the WebSocket server (default: 3001)
+
+## Requirements
+
+- VS Code 1.85.0 or higher
+- Node.js 14.x or higher
+- CodeSnap mobile app (available on iOS and Android)
+
+## Extension Settings
+
+This extension contributes the following settings:
+
+* `codesnap.port`: The port number for the WebSocket server
+
+## Known Issues
+
+- The WebSocket server may be blocked by your firewall. Make sure to allow incoming connections on the specified port.
+
+## Release Notes
+
+### 0.0.1
+
+Initial release of CodeSnap VS Code extension
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+===== FILE: extension/package.json =====
+
+{
+  "name": "codesnap-extension",
+  "displayName": "CodeSnap",
+  "description": "VS Code extension for CodeSnap - Transfer code from your phone to VS Code",
+  "version": "0.0.1",
+  "publisher": "codesnap",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codesnap.startServer",
+        "title": "CodeSnap: Start Server"
+      },
+      {
+        "command": "codesnap.pairDevice",
+        "title": "CodeSnap: Pair Device"
+      },
+      {
+        "command": "codesnap.receiveCode",
+        "title": "CodeSnap: Receive Code"
+      }
+    ],
+    "configuration": {
+      "title": "CodeSnap",
+      "properties": {
+        "codesnap.port": {
+          "type": "number",
+          "default": 3001,
+          "description": "Port for the CodeSnap server"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/vscode": "^1.85.0",
+    "@types/ws": "^8.5.5",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.3",
+    "ws": "^8.14.2"
+  }
+}
+
+
+===== FILE: extension/src/extension.ts =====
+
+import * as vscode from 'vscode';
+import * as WebSocket from 'ws';
+import * as path from 'path';
+import * as os from 'os';
+import * as qrcode from 'qrcode';
+
+let wsServer: WebSocket.Server | null = null;
+let currentPanel: vscode.WebviewPanel | undefined = undefined;
+
+interface CodeSnippet {
+  code: string;
+  language: string;
+  timestamp: number;
+}
+
+// Store the extension context
+export let context: vscode.ExtensionContext;
+
+export function activate(extensionContext: vscode.ExtensionContext) {
+  context = extensionContext;
+  console.log('CodeSnap extension is now active!');
+
+  // Register commands
+  const startServerCmd = vscode.commands.registerCommand('codesnap.startServer', startServer);
+  const pairDeviceCmd = vscode.commands.registerCommand('codesnap.pairDevice', pairDevice);
+  const receiveCodeCmd = vscode.commands.registerCommand('codesnap.receiveCode', receiveCode);
+
+  context.subscriptions.push(startServerCmd, pairDeviceCmd, receiveCodeCmd);
+
+  // Auto-start the server when the extension is activated
+  startServer();
+}
+
+function startServer() {
+  const config = vscode.workspace.getConfiguration('codesnap');
+  const port = config.get<number>('port', 3001);
+
+  if (wsServer) {
+    wsServer.close();
+  }
+
+  wsServer = new WebSocket.Server({ port });
+  
+  wsServer.on('connection', (ws: WebSocket) => {
+    vscode.window.showInformationMessage('Device connected to CodeSnap!');
+
+    ws.on('message', (data: string) => {
+      try {
+        const snippet: CodeSnippet = JSON.parse(data);
+        vscode.window.showInformationMessage('Received new code snippet from device!');
+        
+        // Open the received code in a new editor
+        vscode.workspace.openTextDocument({
+          content: snippet.code,
+          language: snippet.language || 'plaintext'
+        }).then(doc => {
+          vscode.window.showTextDocument(doc as vscode.TextDocument);
+        });
+      } catch (error) {
+        console.error('Error processing received code:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      vscode.window.showInformationMessage('Device disconnected from CodeSnap');
+    });
+  });
+
+  vscode.window.showInformationMessage(`CodeSnap server started on port ${port}`);
+}
+
+async function pairDevice() {
+  if (!wsServer) {
+    vscode.window.showErrorMessage('CodeSnap server is not running. Please start the server first.');
+    return;
+  }
+
+  const ipAddress = getLocalIpAddress();
+  const port = vscode.workspace.getConfiguration('codesnap').get<number>('port', 3001);
+  const connectionString = `codesnap:${ipAddress}:${port}`;
+
+  // Generate QR code
+  const qrCodeDataUrl = await qrcode.toDataURL(connectionString);
+  
+  // Create and show a new webview panel with the QR code
+  if (currentPanel) {
+    currentPanel.reveal(vscode.ViewColumn.Beside);
+  } else {
+    currentPanel = vscode.window.createWebviewPanel(
+      'codesnapPairing',
+      'Pair Device',
+      vscode.ViewColumn.Beside,
+      { enableScripts: true }
+    );
+
+    // Handle panel disposal
+    currentPanel.onDidDispose(
+      () => {
+        currentPanel = undefined;
+      },
+      null,
+      context.subscriptions
+    );
+  }
+
+  // Set the webview's HTML content
+  currentPanel.webview.html = getWebviewContent(ipAddress, port.toString(), qrCodeDataUrl);
+}
+
+function receiveCode() {
+  if (!wsServer) {
+    vscode.window.showErrorMessage('CodeSnap server is not running. Please start the server first.');
+    return;
+  }
+  vscode.window.showInformationMessage('Ready to receive code snippets...');
+}
+
+function getLocalIpAddress(): string {
+  const interfaces = os.networkInterfaces();
+  for (const iface of Object.values(interfaces)) {
+    if (!iface) continue;
+    for (const details of iface) {
+      if (!details.internal && details.family === 'IPv4') {
+        return details.address;
+      }
+    }
+  }
+  return 'localhost';
+}
+
+function getWebviewContent(ip: string, port: string, qrCodeDataUrl: string): string {
+  return `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Pair Device - CodeSnap</title>
+      <style>
+          body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+              padding: 20px;
+              text-align: center;
+              background-color: #1e1e1e;
+              color: #ffffff;
+          }
+          .container {
+              max-width: 500px;
+              margin: 0 auto;
+              padding: 20px;
+              background-color: #252526;
+              border-radius: 8px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+          }
+          h1 {
+              color: #569cd6;
+              margin-bottom: 20px;
+          }
+          .qr-container {
+              margin: 20px 0;
+              padding: 20px;
+              background: white;
+              border-radius: 8px;
+              display: inline-block;
+          }
+          .connection-info {
+              margin: 20px 0;
+              padding: 15px;
+              background: #2d2d2d;
+              border-radius: 6px;
+              font-family: monospace;
+              word-break: break-all;
+          }
+          .instructions {
+              text-align: left;
+              margin: 20px 0;
+              line-height: 1.5;
+          }
+          .step {
+              margin-bottom: 10px;
+              display: flex;
+              align-items: flex-start;
+          }
+          .step-number {
+              background: #569cd6;
+              color: white;
+              width: 24px;
+              height: 24px;
+              border-radius: 50%;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              margin-right: 10px;
+              flex-shrink: 0;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="container">
+          <h1>Pair Your Device</h1>
+          
+          <div class="qr-container">
+              <img src="${qrCodeDataUrl}" alt="QR Code for pairing" />
+          </div>
+          
+          <div class="connection-info">
+              <div>Server: ${ip}:${port}</div>
+          </div>
+          
+          <div class="instructions">
+              <div class="step">
+                  <div class="step-number">1</div>
+                  <div>Open the CodeSnap app on your phone</div>
+              </div>
+              <div class="step">
+                  <div class="step-number">2</div>
+                  <div>Tap on "Connect to VS Code" and scan the QR code above</div>
+              </div>
+              <div class="step">
+                  <div class="step-number">3</div>
+                  <div>Take a photo of your code and send it to VS Code</div>
+              </div>
+          </div>
+      </div>
+  </body>
+  </html>`;
+}
+
+export function deactivate() {
+  if (wsServer) {
+    wsServer.close();
+    wsServer = null;
+  }
+}
+
+
+===== FILE: extension/tsconfig.json =====
+
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "outDir": "out",
+    "lib": ["es2020"],
+    "sourceMap": true,
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", ".vscode-test"]
+}
+
+
+===== FILE: index.html =====
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/CodeSnapLogo.PNG" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a73e8" />
+    <meta name="description" content="Snap code photos and extract code with AI" />
+    <title>CodeSnap</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+===== FILE: package.json =====
+
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "save-server": "node server/savePicture.js"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.3",
+    "vite": "^7.2.2"
+  }
+}
+
+
+===== FILE: public/manifest.json =====
+
+{
+  "name": "CodeSnap",
+  "short_name": "CodeSnap",
+  "description": "Snap code photos and extract code with AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a73e8",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/CodeSnapLogo.PNG",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
+
+===== FILE: server/savePicture.js =====
+
+import express from 'express'
+import fs from 'fs'
+import path from 'path'
+
+const app = express()
+app.use(express.json({ limit: '25mb' }))
+
+const PICS_DIR = path.resolve(process.cwd(), 'pictures')
+if (!fs.existsSync(PICS_DIR)) fs.mkdirSync(PICS_DIR, { recursive: true })
+
+app.post('/save-picture', (req, res) => {
+  try {
+    const { filename, data } = req.body
+    if (!filename || !data) return res.status(400).json({ error: 'filename and data required' })
+
+    // data should be like 'data:image/jpeg;base64,/9j/4AAQ...'
+    const match = data.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/)
+    if (!match) return res.status(400).json({ error: 'invalid image data' })
+
+    const base64 = match[2]
+    const buffer = Buffer.from(base64, 'base64')
+    const filepath = path.join(PICS_DIR, filename)
+    fs.writeFileSync(filepath, buffer)
+
+    return res.json({ ok: true, path: filepath })
+  } catch (err) {
+    console.error('save-picture error', err)
+    return res.status(500).json({ error: String(err) })
+  }
+})
+
+const port = process.env.PORT || 4000
+app.listen(port, () => console.log(`savePicture server listening on http://localhost:${port}`))
+
+
+===== FILE: src/App.css =====
+
+:root{
+  --google-blue: #1a73e8;
+  --google-red: #ea4335;
+  --google-yellow: #fbbc05;
+  --google-green: #34a853;
+  --muted:#5f6368;
+}
+
+/* Code animation styles */
+.code-animation-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:#0d1117;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  animation:fadeOut 0.5s ease-out 1.7s forwards;
+}
+
+.code-animation-container{
+  background:#161b22;
+  border:1px solid #30363d;
+  border-radius:8px;
+  width:90%;
+  max-width:600px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  overflow:hidden;
+}
+
+.code-animation-header{
+  background:#21262d;
+  padding:12px 16px;
+  display:flex;
+  gap:8px;
+  border-bottom:1px solid #30363d;
+}
+
+.code-animation-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  display:inline-block;
+}
+
+.code-animation-dot:nth-child(1){background:#ff5f56}
+.code-animation-dot:nth-child(2){background:#ffbd2e}
+.code-animation-dot:nth-child(3){background:#27c93f}
+
+.code-animation-code{
+  margin:0;
+  padding:24px;
+  background:#0d1117;
+  color:#c9d1d9;
+  font-family:'Monaco','Menlo','Courier New',monospace;
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:auto;
+  min-height:120px;
+}
+
+.code-animation-code code{
+  color:#c9d1d9;
+  white-space:pre;
+}
+
+.code-cursor{
+  display:inline-block;
+  width:2px;
+  height:1.2em;
+  background:#c9d1d9;
+  margin-left:2px;
+  animation:blink 1s infinite;
+  vertical-align:baseline;
+}
+
+@keyframes blink{
+  0%,50%{opacity:1}
+  51%,100%{opacity:0}
+}
+
+@keyframes fadeOut{
+  to{opacity:0;visibility:hidden}
+}
+
+@media (max-width:520px){
+  .code-animation-code{font-size:14px;padding:20px}
+}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;background:#ffffff;color:#202124}
+
+.gs-hero{height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.gs-card{max-width:720px;width:100%;text-align:center;padding:56px;border-radius:12px;box-shadow:0 10px 30px rgba(60,64,67,0.15)}
+
+.gs-logo{width:160px;height:160px;margin:0 auto 24px;display:block;object-fit:contain}
+
+.google-logo{font-size:36px;font-weight:700;display:inline-block;margin-bottom:8px}
+.google-logo span{display:inline-block;padding:0 2px}
+.g-blue{color:var(--google-blue)}
+.g-red{color:var(--google-red)}
+.g-yellow{color:var(--google-yellow)}
+.g-green{color:var(--google-green)}
+
+.gs-title{font-size:48px;margin:6px 0 12px;font-weight:600}
+.gs-desc{color:var(--muted);font-size:18px;margin:0 0 28px}
+
+.gs-cta{display:flex;justify-content:center}
+.btn-glow{display:inline-block;padding:14px 28px;border-radius:999px;text-decoration:none;color:white;font-weight:700;background:linear-gradient(90deg,var(--google-blue),var(--google-green));box-shadow:0 6px 20px rgba(26,115,232,0.28),0 0 0 0 rgba(26,115,232,0.35);transition:transform 180ms ease,box-shadow 180ms ease}
+.btn-glow:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(26,115,232,0.28),0 0 40px rgba(26,115,232,0.18)}
+.btn-glow:active{transform:translateY(-1px)}
+
+@media (max-width:520px){
+  .gs-card{padding:36px}
+  .gs-title{font-size:34px}
+  .google-logo{font-size:24px}
+}
+
+@media (prefers-reduced-motion: no-preference){
+  @keyframes glowPulse{0%{box-shadow:0 6px 20px rgba(26,115,232,0.18),0 0 0 0 rgba(26,115,232,0.18)}50%{box-shadow:0 18px 40px rgba(26,115,232,0.22),0 0 80px rgba(26,115,232,0.10)}100%{box-shadow:0 6px 20px rgba(26,115,232,0.18),0 0 0 0 rgba(26,115,232,0.18)}}
+  .btn-glow{animation:glowPulse 2.8s infinite}
+}
+
+/* Camera page styles */
+.camera-page{height:100vh;width:100vw;display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;background:#000;overflow:hidden}
+.camera-top{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;position:relative}
+.btn-ghost{background:transparent;border:0;color:#1a73e8;font-weight:600;padding:8px 12px;border-radius:8px;flex-shrink:0}
+.camera-title{font-weight:600;color:#fff;position:absolute;left:50%;transform:translateX(-50%)}
+.camera-top > div:last-child{width:80px;flex-shrink:0}
+.video-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;position:relative;width:100%}
+.camera-video{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}
+.camera-error{color:#fff;padding:16px}
+.camera-controls{padding:18px;display:flex;align-items:center;justify-content:center}
+.capture-btn{
+  width:84px;
+  height:84px;
+  border-radius:50%;
+  background:transparent;
+  border:6px solid rgba(0,0,0,0.06);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 30px rgba(60,64,67,0.12);
+  position:relative;
+  cursor:pointer;
+}
+.capture-btn .inner{
+  width:56px;
+  aspect-ratio:1/1;
+  height:auto;
+  border-radius:50%;
+  background: linear-gradient(180deg,#ffffff,#f2f2f2);
+  position:relative;
+  display:block;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.12);
+}
+.capture-actions{display:flex;justify-content:space-between;align-items:center;width:100%}
+.capture-actions .btn:first-child,.capture-actions .btn:last-child{padding:9px 18px;font-size:12.6px;width:90px;height:36px;text-align:center;line-height:1;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
+.capture-actions .btn.gemini{position:relative;transform:none}
+.capture-actions .btn.gemini:hover{transform:translateY(-2px)}
+.capture-actions .btn.gemini:active{transform:translateY(0)}
+.capture-actions .btn.gemini:disabled{transform:none}
+.capture-preview{display:flex;align-items:center;justify-content:center;width:100%;height:100%;position:absolute;top:0;left:0;right:0;bottom:0;background:#000}
+.capture-preview img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
+.btn{background:#fff;border:1px solid #dadce0;color:#202124;font-weight:500;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;transition:all 0.3s ease;text-decoration:none;display:inline-block;position:relative;overflow:hidden}
+.btn:hover{background:#f8f9fa;box-shadow:0 1px 2px rgba(60,64,67,0.3)}
+.btn:active{background:#f1f3f4}
+.btn.primary{background:#1a73e8;color:#fff;border-color:#1a73e8}
+.btn.primary:hover{background:#1765cc;box-shadow:0 1px 3px rgba(26,115,232,0.4)}
+.btn.primary:active{background:#1557b0}
+.btn.gemini{background:linear-gradient(135deg,#8b5cf6 0%,#a855f7 25%,#c084fc 50%,#d946ef 75%,#a855f7 100%);background-size:200% 200%;color:#fff;border:none;font-weight:600;box-shadow:0 4px 20px rgba(139,92,246,0.6),0 0 30px rgba(168,85,247,0.5),0 0 50px rgba(139,92,246,0.3),inset 0 0 20px rgba(255,255,255,0.1);position:relative}
+.btn.gemini::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);transition:left 0.5s}
+.capture-actions .btn.gemini:hover{background-position:100% 0;box-shadow:0 8px 30px rgba(139,92,246,0.8),0 0 50px rgba(168,85,247,0.7),0 0 80px rgba(139,92,246,0.5),inset 0 0 25px rgba(255,255,255,0.15)}
+.btn.gemini:hover::before{left:100%}
+.capture-actions .btn.gemini:active{box-shadow:0 4px 20px rgba(139,92,246,0.6),0 0 30px rgba(168,85,247,0.5),0 0 50px rgba(139,92,246,0.3)}
+.capture-actions .btn.gemini:disabled{opacity:0.7;cursor:not-allowed}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+@keyframes geminiPulse{0%,100%{box-shadow:0 4px 20px rgba(139,92,246,0.6),0 0 30px rgba(168,85,247,0.5),0 0 50px rgba(139,92,246,0.3),inset 0 0 20px rgba(255,255,255,0.1)}50%{box-shadow:0 8px 35px rgba(139,92,246,0.8),0 0 60px rgba(168,85,247,0.7),0 0 100px rgba(139,92,246,0.5),inset 0 0 25px rgba(255,255,255,0.15)}}
+@media (prefers-reduced-motion: no-preference){
+  .btn.gemini:not(:disabled){animation:geminiPulse 2s ease-in-out infinite}
+}
+
+/* inner decorative elements: small colored core and subtle ring pattern */
+.capture-btn .inner::before{
+  content:"";
+  position:absolute;
+  width:22%;
+  height:22%;
+  border-radius:50%;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background: radial-gradient(circle at center, var(--google-red) 0%, rgba(234,67,53,0.9) 40%, rgba(234,67,53,0.12) 60%);
+  box-shadow:0 2px 8px rgba(234,67,53,0.18);
+}
+
+.capture-btn .inner::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background: repeating-radial-gradient(circle at center, rgba(0,0,0,0.02) 0 1px, transparent 1px 6px);
+  opacity:0.06;
+}
+
+/* Gemini-style colored ring behind the inner shutter */
+.capture-btn::before{
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 50%;
+  /* Gemini-like color sequence: blue -> red -> yellow -> green */
+  background: conic-gradient(from 45deg, #1a73e8 0deg, #ea4335 90deg, #fbbc05 180deg, #34a853 270deg, #1a73e8 360deg);
+  /* make it a crisp ring by masking out the center */
+  -webkit-mask: radial-gradient(circle at center, transparent 48%, black 49%);
+  mask: radial-gradient(circle at center, transparent 48%, black 49%);
+  opacity: 1;
+  z-index: 0;
+  transform: rotate(45deg); /* mirror/orient the color sweep similar to the reference */
+}
+
+.capture-btn .inner{z-index:1}
+
+@media (max-width:480px){
+  .capture-btn{width:72px;height:72px}
+  .capture-btn .inner{width:44px;height:44px}
+}
+
+/* Code modal popup */
+.code-modal-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  padding:20px;
+}
+
+.code-modal{
+  background:#000;
+  border-radius:12px;
+  width:100%;
+  max-width:800px;
+  max-height:85vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+
+.code-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 24px;
+  border-bottom:1px solid #333;
+}
+
+.code-modal-header h3{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+  color:#fff;
+}
+
+.code-modal-close{
+  background:transparent;
+  border:0;
+  color:#fff;
+  font-size:32px;
+  line-height:1;
+  cursor:pointer;
+  padding:0;
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:4px;
+  transition:background 0.2s;
+}
+
+.code-modal-close:hover{
+  background:#333;
+}
+
+.code-modal-content{
+  flex:1;
+  overflow-y:auto;
+  padding:24px;
+  min-height:200px;
+}
+
+.code-modal-text{
+  background:#000;
+  color:#fff;
+  font-size:14px;
+  line-height:1.6;
+  font-family:'Monaco', 'Menlo', 'Courier New', monospace;
+  margin:0;
+  white-space:pre-wrap;
+  word-wrap:break-word;
+  overflow-x:auto;
+}
+
+.code-modal-footer{
+  padding:16px 24px;
+  border-top:1px solid #333;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.code-modal-footer .btn{
+  min-width:100px;
+}
+
+
+===== FILE: src/App.tsx =====
+
+import './App.css'
+
+function GoogleLogo() {
+  const letters: [string, string][] = [
+    ['C', 'g-blue'],
+    ['o', 'g-red'],
+    ['d', 'g-yellow'],
+    ['e', 'g-blue'],
+    ['S', 'g-green'],
+    ['n', 'g-red'],
+    ['a', 'g-blue'],
+    ['p', 'g-green']
+  ]
+
+  return (
+    <div className="google-logo" aria-hidden>
+      {letters.map(([ch, cls], i) => (
+        <span key={i} className={cls}>
+          {ch}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+import { useState, useEffect } from 'react'
+import Camera from './Camera'
+
+const TYPING_CODE = `function extractCode(image) {
+  const code = analyze(image);
+  return format(code);
+}`
+
+type CodeAnimationProps = {
+  skipAnimation?: boolean
+}
+
+function CodeAnimation({ skipAnimation = false }: CodeAnimationProps) {
+  const [displayedCode, setDisplayedCode] = useState('')
+  const [showContent, setShowContent] = useState(false)
+  const [shouldShow, setShouldShow] = useState(false)
+
+  useEffect(() => {
+    if (skipAnimation) {
+      setShowContent(true)
+      return
+    }
+    
+    setShouldShow(true)
+    let index = 0
+    const typingInterval = setInterval(() => {
+      if (index < TYPING_CODE.length) {
+        setDisplayedCode(TYPING_CODE.slice(0, index + 1))
+        index++
+      } else {
+        clearInterval(typingInterval)
+        setTimeout(() => {
+          setShowContent(true)
+        }, 500)
+      }
+    }, 20)
+
+    return () => clearInterval(typingInterval)
+  }, [skipAnimation])
+
+  if (showContent || !shouldShow) return null
+
+  return (
+    <div className="code-animation-overlay">
+      <div className="code-animation-container">
+        <div className="code-animation-header">
+          <span className="code-animation-dot"></span>
+          <span className="code-animation-dot"></span>
+          <span className="code-animation-dot"></span>
+        </div>
+        <pre className="code-animation-code">
+          <code>{displayedCode}</code>
+          <span className="code-cursor">|</span>
+        </pre>
+      </div>
+    </div>
+  )
+}
+
+function App() {
+  const [view, setView] = useState<'home' | 'camera'>('home')
+  const [fromCamera, setFromCamera] = useState(false)
+
+  useEffect(() => {
+    if (fromCamera) {
+      setFromCamera(false)
+    }
+  }, [fromCamera])
+
+  if (view === 'camera') {
+    return <Camera onClose={() => {
+      setFromCamera(true)
+      setView('home')
+    }} />
+  }
+
+  return (
+    <>
+      <CodeAnimation skipAnimation={fromCamera} />
+      <div className="gs-hero">
+        <div className="gs-card">
+          <img src="/CodeSnapLogo.PNG" alt="CodeSnap" className="gs-logo" />
+          <GoogleLogo />
+          <p className="gs-desc">Instantly extract code from lecture screens — snap, extract, paste.</p>
+
+          <div className="gs-cta">
+            <button className="btn-glow" onClick={() => setView('camera')}>Get Started</button>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default App
+
+
+===== FILE: src/Camera.tsx =====
+
+import { useEffect, useRef, useState } from 'react'
+
+type Props = {
+  onClose: () => void
+}
+
+export default function Camera({ onClose }: Props) {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [captured, setCaptured] = useState<string | null>(null)
+  const [extracting, setExtracting] = useState(false)
+  const [extractedCode, setExtractedCode] = useState<string | null>(null)
+
+  useEffect(() => {
+    let mounted = true
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false,
+        })
+        if (!mounted) return
+        streamRef.current = stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          await videoRef.current.play()
+        }
+        setError(null)
+      } catch (e: any) {
+        console.error('Camera error', e)
+        setError(e?.message || 'Unable to access camera')
+      }
+    }
+
+    startCamera()
+
+    return () => {
+      mounted = false
+      // stop tracks
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop())
+        streamRef.current = null
+      }
+    }
+  }, [])
+
+  function capture() {
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    if (!video || !canvas) return
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+    const data = canvas.toDataURL('image/jpeg', 0.92)
+    setCaptured(data)
+    // stop camera stream to "freeze" frame and release device
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop())
+      streamRef.current = null
+    }
+  }
+
+  function retake() {
+    setCaptured(null)
+    // restart camera stream
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
+      .then((stream) => {
+        streamRef.current = stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          videoRef.current.play().catch(() => {})
+        }
+      })
+      .catch((e) => setError(e?.message || 'Unable to access camera'))
+  }
+
+  async function analyzeImage() {
+    if (!captured) return
+    setExtracting(true)
+    setExtractedCode(null)
+    try {
+      const API_BASE = (import.meta as any).env.VITE_API_BASE || 'https://code-snap-backend.vercel.app'
+      const url = `${API_BASE}/extract`
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageData: captured }),
+      })
+      if (!res.ok) {
+        const txt = await res.text()
+        throw new Error(txt || 'Extraction failed')
+      }
+      const json = await res.json()
+      if (json.error) {
+        throw new Error(json.error)
+      }
+      const displayText = json.code ? `Language: ${json.language}\n\n${json.code}` : 'No code extracted'
+      setExtractedCode(displayText)
+    } catch (err: any) {
+      setExtractedCode(`ERROR: ${err?.message || String(err)}`)
+    } finally {
+      setExtracting(false)
+    }
+  }
+
+  async function copyToClipboard() {
+    if (!extractedCode) return
+    try {
+      await navigator.clipboard.writeText(extractedCode)
+      // You could add a toast notification here if desired
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
+
+  function closeModal() {
+    setExtractedCode(null)
+  }
+
+  return (
+    <div className="camera-page">
+      <div className="camera-top">
+        <button className="btn-ghost" onClick={onClose} aria-label="Close camera">Back</button>
+        <div className="camera-title">Camera</div>
+        <div />
+      </div>
+
+      <div className="video-wrap">
+        {error ? (
+          <div className="camera-error">{error}</div>
+        ) : (
+          <>
+            {!captured && <video ref={videoRef} className="camera-video" playsInline muted />}
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+            {captured && (
+              <div className="capture-preview">
+                <img src={captured} alt="capture preview" />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      <div className="camera-controls">
+        {!captured ? (
+          <button className="capture-btn" onClick={capture} aria-label="Capture photo">
+            <span className="inner" />
+          </button>
+        ) : (
+          <div className="capture-actions">
+            <button className="btn" onClick={retake}>Retake</button>
+            <button className="btn gemini" onClick={analyzeImage} disabled={extracting}>
+              {extracting ? 'Analyzing…' : 'Analyze'}
+            </button>
+            <a className="btn" href={captured} download="codesnap.jpg">Save</a>
+          </div>
+        )}
+      </div>
+
+      {extractedCode !== null && (
+        <div className="code-modal-overlay" onClick={closeModal}>
+          <div className="code-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="code-modal-header">
+              <h3>Extracted Code</h3>
+              <button className="code-modal-close" onClick={closeModal} aria-label="Close">×</button>
+            </div>
+            <div className="code-modal-content">
+              <pre className="code-modal-text">{extractedCode}</pre>
+            </div>
+            <div className="code-modal-footer">
+              <button className="btn primary" onClick={copyToClipboard}>Copy</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+
+===== FILE: src/index.css =====
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+
+===== FILE: src/main.tsx =====
+
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+
+===== FILE: tsconfig.app.json =====
+
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"]
+}
+
+
+===== FILE: tsconfig.json =====
+
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+
+
+===== FILE: tsconfig.node.json =====
+
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["vite.config.ts"]
+}
+
+
+===== FILE: vercel.json =====
+
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+
+
+===== FILE: vite.config.ts =====
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/save-picture': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
+})
+
+
