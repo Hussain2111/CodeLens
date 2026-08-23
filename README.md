@@ -104,7 +104,7 @@ The deployed PWA is HTTPS (a hard requirement for camera access on a phone), and
 
 ### Frontend
 1. `cd codesnap && npm install`
-2. `.env.local` already points `VITE_API_BASE_URL` at `http://localhost:8000` for local dev
+2. Copy `.env.example` to `.env.local` (or skip this — the code already falls back to `http://localhost:8000` if `VITE_API_BASE_URL` isn't set)
 3. `npm run dev`
 
 Camera access needs a secure context (HTTPS, or `localhost`). Plain `http://<lan-ip>:5173` on a phone will NOT be able to open the camera — see Deployment below.
