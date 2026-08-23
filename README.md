@@ -28,7 +28,8 @@ A photo-to-code extraction app built with a React + Vite frontend and a FastAPI 
 Camera access needs a secure context (HTTPS, or `localhost`). Plain `http://<lan-ip>:5173` on a phone will NOT be able to open the camera — see Deployment below.
 
 ## Known constraints
-- **Gemini free tier rate limits** (model: `gemini-3.6-flash`, as of Jan 2026): 10 requests/minute, 250,000 tokens/minute, 250 requests/day. Limits apply per Google Cloud project, not per API key, and reset at midnight Pacific Time. `POST /extract` returns `429` when the rate limit is hit. Check current limits at [aistudio.google.com/rate-limit](https://aistudio.google.com/rate-limit) since Google adjusts these over time.
+- **Gemini free tier rate limits** (model: `gemini-3.6-flash`, as of Jan 2026): 10 requests/minute, 250,000 tokens/minute, 250 requests/day. Limits apply per Google Cloud project, not per API key, and reset at midnight Pacific Time. Check current limits at [aistudio.google.com/rate-limit](https://aistudio.google.com/rate-limit) since Google adjusts these over time.
+- **`POST /extract` protections**: rate-limited to 8 requests/minute globally (shared across every caller, kept under Gemini's 10/minute cap) and 20 requests/day per client IP (so no single caller can burn through most of the 250/day quota alone) — both return `429`. Images over 8MB decoded are rejected with `413`.
 
 ## Deployment
 Camera capture requires HTTPS on a phone, so both sides are deployed rather than served over plain LAN HTTP:

@@ -4,9 +4,12 @@ import os
 import re
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from google.genai import errors as genai_errors
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from gemini_client import extract_code_from_image
 from models import ExtractRequest, ExtractResponse
@@ -26,6 +29,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Two tiers: a global cap protects the shared Gemini free-tier quota (10
+# requests/minute, 250/day — see README) from being exhausted no matter how
+# many different clients are calling; a per-IP cap stops one caller from
+# using up most of that shared daily budget alone.
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+def _global_key(request: Request) -> str:
+    return "global"
+
+
+MAX_IMAGE_BYTES = 8 * 1024 * 1024  # 8 MB
 
 @app.get("/health")
 def health():
@@ -51,12 +69,20 @@ def decode_image(data: str) -> tuple[bytes, str]:
     if not image_bytes:
         raise HTTPException(status_code=400, detail="Image data is empty")
 
+    if len(image_bytes) > MAX_IMAGE_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Image is too large (max {MAX_IMAGE_BYTES // (1024 * 1024)}MB)",
+        )
+
     return image_bytes, mime_type
 
 
 @app.post("/extract", response_model=ExtractResponse)
-def extract(request: ExtractRequest):
-    image_bytes, mime_type = decode_image(request.image)
+@limiter.limit("8/minute", key_func=_global_key)
+@limiter.limit("20/day")
+def extract(request: Request, body: ExtractRequest):
+    image_bytes, mime_type = decode_image(body.image)
 
     try:
         result = extract_code_from_image(image_bytes, mime_type)
