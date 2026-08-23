@@ -1,0 +1,47 @@
+.pair-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.pair-page p {
+  max-width: 40ch;
+  color: var(--text);
+}
+
+.pair-viewport {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.pair-viewport video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pair-error {
+  color: #e5484d;
+}
+
+.pair-page .cta,
+.pair-page button {
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}

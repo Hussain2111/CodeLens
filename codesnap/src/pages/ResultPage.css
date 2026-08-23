@@ -13,11 +13,32 @@
   max-width: 640px;
 }
 
-.result-page .cta {
+.result-page .cta,
+.result-page button {
   padding: 12px 28px;
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
   text-decoration: none;
   font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.result-page .cta.secondary {
+  background: transparent;
+  color: var(--text-h);
+  border: 1px solid var(--border);
+}
+
+.result-page button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result-page .send-error {
+  color: #e5484d;
+  max-width: 40ch;
+  text-align: center;
 }

@@ -9,6 +9,9 @@ export default function LandingPage() {
       <Link className="cta" to="/camera">
         Open camera
       </Link>
+      <Link className="secondary-link" to="/pair">
+        Pair with VS Code
+      </Link>
     </main>
   )
 }

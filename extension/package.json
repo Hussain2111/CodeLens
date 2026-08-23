@@ -1,0 +1,54 @@
+{
+  "name": "codesnap-extension",
+  "displayName": "CodeSnap",
+  "description": "Receive code snapped on your phone directly into a VS Code editor tab",
+  "version": "0.0.1",
+  "publisher": "codesnap",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codesnap.pairDevice",
+        "title": "CodeSnap: Pair Device"
+      },
+      {
+        "command": "codesnap.connectionStatus",
+        "title": "CodeSnap: Connection Status"
+      }
+    ],
+    "configuration": {
+      "title": "CodeSnap",
+      "properties": {
+        "codesnap.port": {
+          "type": "number",
+          "default": 3001,
+          "description": "Port for the CodeSnap pairing server"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/vscode": "^1.134.0",
+    "@types/ws": "^8.18.1",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "selfsigned": "^5.5.0",
+    "ws": "^8.21.3"
+  }
+}
