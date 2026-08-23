@@ -1,41 +1,15 @@
-import './App.css'
-import {useEffect, useState } from "react";
-
-type Health = {
-  status: string;
-  message: string;
-}
+import { Route, Routes } from 'react-router'
+import LandingPage from './pages/LandingPage'
+import CameraPage from './pages/CameraPage'
+import ResultPage from './pages/ResultPage'
 
 function App() {
-  
-  const [health, setHealth] = useState<Health | null>();
-  const [error, setError] = useState<string | null>();
-
-  const url = "http://localhost:8000/health";
-  useEffect(() => {
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => setHealth(data))
-      .catch((err) => setError(err.message));
-  }, []);
-
   return (
-    <>
-      { health ? (
-          <div>
-            {health.status}
-            {health.message}
-          </div>
-        ) : error ? (
-          <p style={{ color: "crimson" }}>Error: {error}</p>
-        ) : (
-           <p>Checking backend health…</p>
-        )
-      }
-    </>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/camera" element={<CameraPage />} />
+      <Route path="/result" element={<ResultPage />} />
+    </Routes>
   )
 }
 

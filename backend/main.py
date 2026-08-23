@@ -1,14 +1,27 @@
-from fastapi import FastAPI
+import base64
+import binascii
+import os
+import re
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from google.genai import errors as genai_errors
+
+from gemini_client import extract_code_from_image
+from models import ExtractRequest, ExtractResponse
+
+load_dotenv()
 
 app = FastAPI(title="Codesnap API")
 
+DEFAULT_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+extra_origins = os.environ.get("FRONTEND_ORIGINS", "")
+allow_origins = DEFAULT_ORIGINS + [o.strip() for o in extra_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,3 +33,41 @@ def health():
         "status": "ok",
         "message": "codesnap-backend"
     }
+
+
+DATA_URL_RE = re.compile(r"^data:(?P<mime>[\w/+.-]+);base64,")
+
+
+def decode_image(data: str) -> tuple[bytes, str]:
+    match = DATA_URL_RE.match(data)
+    mime_type = match.group("mime") if match else "image/png"
+    payload = data[match.end():] if match else data
+
+    try:
+        image_bytes = base64.b64decode(payload, validate=True)
+    except binascii.Error:
+        raise HTTPException(status_code=400, detail="Invalid base64 image data")
+
+    if not image_bytes:
+        raise HTTPException(status_code=400, detail="Image data is empty")
+
+    return image_bytes, mime_type
+
+
+@app.post("/extract", response_model=ExtractResponse)
+def extract(request: ExtractRequest):
+    image_bytes, mime_type = decode_image(request.image)
+
+    try:
+        result = extract_code_from_image(image_bytes, mime_type)
+    except genai_errors.APIError as e:
+        if e.code == 429:
+            raise HTTPException(status_code=429, detail="Gemini rate limit exceeded, try again shortly")
+        if e.code == 400:
+            raise HTTPException(status_code=400, detail=f"Gemini rejected the image: {e.message}")
+        raise HTTPException(status_code=502, detail=f"Gemini API error: {e.message}")
+
+    if not result.code.strip():
+        raise HTTPException(status_code=422, detail="No code detected in the image")
+
+    return result
